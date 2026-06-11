@@ -3,3 +3,10 @@ pandas
 numpy
 plotly
 gdown
+geopandas
+geobr
+folium
+streamlit-folium
+branca
+shapely
+pyogrio
