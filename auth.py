@@ -24,3 +24,4 @@ def check_password() -> bool:
             st.error("Senha incorreta.")
 
     st.stop()
+
