@@ -1,40 +1,56 @@
-# Dashboard UESC - Custo de Oportunidade Agropecuário
+# Dashboard SIDRA - Custo de Oportunidade Agropecuário
 
-## Arquivos para o GitHub
+Projeto Streamlit para visualizar o custo de oportunidade agropecuário por município, microrregião, UF e Grande Região.
 
-Obrigatórios:
+## Arquivos principais
 
-- `app.py`
-- `requirements.txt`
-- `Brasão_da_UESC.png`
+- `app.py`: aplicativo Streamlit.
+- `auth.py`: controle de senha.
+- `config.py`: caminhos, ID do Google Drive e parâmetros centrais.
+- `download_base.py`: baixa a base do Google Drive somente quando necessário.
+- `geojson_utils.py`: gera os GeoJSONs simplificados na primeira execução e reaproveita depois.
+- `requirements.txt`: dependências do Streamlit Cloud.
+- `scripts/gerar_base_custo_oportunidade_v15.py`: código original para gerar a base pela nova metodologia.
+- `scripts/ajustar_mapas_e_ranking_microrregioes.py`: script auxiliar de ajustes dos mapas e ranking.
 
-Para mapas:
+## Base de dados
 
-- `geo_uf_simplificado.geojson`
-- `geo_microrregioes_simplificado.geojson`
-- `geo_municipios_simplificado.geojson` opcional, se ficar com menos de 25 MB.
+A base oficial **não precisa ficar no GitHub**. O app baixa automaticamente do Google Drive usando o ID:
 
-A base CSV é baixada automaticamente do Google Drive.
+`1WlJh_NZQZpwi9Fp9aWghr1mhB2gHwaJ9`
 
-## Como gerar os GeoJSONs
+Nome esperado do arquivo:
 
-No seu computador, preferencialmente com Python 3.11 ou 3.12:
+`BASE_USADA_ARTIGO_sem_menores_5ha_sem_outliers_acima_15000_maio2026.csv`
 
-```bash
-python -m pip install --upgrade pip
-python -m pip install geopandas geobr shapely pyogrio
-python gerar_geojsons.py
+O arquivo será salvo automaticamente em `dados/` na primeira execução.
+
+## Senha no Streamlit Cloud
+
+Em **Settings > Secrets**, adicione:
+
+```toml
+APP_PASSWORD = "sua_senha_aqui"
+GOOGLE_DRIVE_ID = "1WlJh_NZQZpwi9Fp9aWghr1mhB2gHwaJ9"
 ```
 
-Depois envie os `.geojson` gerados para o GitHub.
+Não coloque a senha real no GitHub.
 
-## Rodar localmente
+## Como rodar localmente
 
 ```bash
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## Observação sobre a média e a mediana
+Para testar localmente, crie `.streamlit/secrets.toml` a partir de `.streamlit/secrets.toml.example`.
 
-O painel cria os estratos agregados e também o grupo geral `5) >= 5 ha`. Para evitar duplicação dos dados, o filtro de estrato vem por padrão selecionando apenas `5) >= 5 ha`.
+## GeoJSONs
+
+Os arquivos abaixo são criados automaticamente na primeira execução, caso não existam:
+
+- `dados/geo_uf_simplificado.geojson`
+- `dados/geo_microrregioes_simplificado.geojson`
+- `dados/geo_municipios_simplificado.geojson`
+
+Depois disso, o app reaproveita os arquivos salvos e não chama o `geobr` novamente.
