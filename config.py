@@ -27,3 +27,4 @@ GEOJSON_MUN = DADOS_DIR / "geo_municipios_simplificado.geojson"
 
 COL_CUSTO_NAO_NEGATIVO = "custo_oportunidade_corrigido_r_ha_imputado_nao_negativo"
 LIMITE_SUPERIOR_PADRAO = 15000
+
