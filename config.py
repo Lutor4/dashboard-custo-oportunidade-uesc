@@ -9,8 +9,8 @@ ANO_MAPA = 2017
 
 # ID do arquivo no Google Drive:
 # https://drive.google.com/file/d/1WlJh_NZQZpwi9Fp9aWghr1mhB2gHwaJ9/view
-DEFAULT_GOOGLE_DRIVE_ID = "1WlJh_NZQZpwi9Fp9aWghr1mhB2gHwaJ9"
-BASE_FILENAME = "BASE_USADA_ARTIGO_sem_menores_5ha_sem_outliers_acima_15000_maio2026.csv"
+DEFAULT_GOOGLE_DRIVE_ID = "1k96TNf2QEX0QUzktaASE-KaQYT6FkNt7"
+BASE_FILENAME = "BASE_COMPLETA_com_imputacao_todos_estratos_com_outliers_maio2026"
 
 ROOT_DIR = Path(__file__).resolve().parent
 DADOS_DIR = ROOT_DIR / "dados"
