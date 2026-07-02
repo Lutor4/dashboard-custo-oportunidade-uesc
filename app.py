@@ -652,48 +652,131 @@ def mostrar_cabecalho():
             "Análise municipal, microrregional, estadual e regional do custo de oportunidade agropecuário."
         )
 
-    with st.expander("Metodologia do indicador", expanded=False):
-        st.markdown(
-            """
-            Este painel utiliza o **custo de oportunidade corrigido para abril de 2026**, com base no índice de correção utilizado na metodologia do projeto.
+    with st.expander("📖 Metodologia do indicador", expanded=False):
+        st.subheader("Base de dados")
 
-            A medida foi construída a partir do resultado líquido agropecuário por hectare.
-            """
-        )
-
-        st.latex(
-            r"""
-            \text{Custo de oportunidade}
-            =
-            \frac{
-            (\text{Valor da produção corrigido} - \text{Valor das despesas corrigido}) \times 1000
-            }{
-            \text{Área utilizada ou área dos estabelecimentos em hectares}
-            }
-            """
-        )
-
-        st.markdown(
-            """
-            Como os valores monetários originais do SIDRA estavam em **mil reais**, multiplicou-se por **1000** para obter o valor em reais.
-
-            Para esta versão do painel, utiliza-se exclusivamente o **custo de oportunidade não negativo**:
-            """
-        )
-
-        st.latex(
-            r"""
-            \text{Custo não negativo}
-            =
-            \max(\text{Custo de oportunidade}, 0)
-            """
-        )
-
-        st.markdown(
-            """
-            Assim, valores originalmente negativos foram transformados em **0**, evitando que prejuízos distorçam as comparações espaciais de custo de oportunidade positivo.
-            """
-        )
+        st.markdown("""
+        Este painel apresenta estimativas do **Custo de Oportunidade da Agropecuária Brasileira**, calculadas a partir dos dados do **Censo Agropecuário 2017**, disponibilizados pelo Sistema IBGE de Recuperação Automática (**SIDRA/IBGE**).
+        
+        Os valores monetários disponibilizados pelo SIDRA encontram-se expressos em **mil reais** e foram atualizados para **maio de 2026** utilizando o **Índice de Preços ao Produtor Amplo – Mercado (IPA-M)**, da Fundação Getulio Vargas (FGV), permitindo a comparação dos resultados em valores reais.
+        """)
+        
+        st.subheader("Cálculo do indicador")
+        
+        st.latex(r"""
+        CO_{2017}
+        =
+        \frac{(VP-VD)\times1000}{AU}
+        """)
+        
+        st.markdown("""
+        onde:
+        
+        - **VP** = Valor Bruto da Produção Agropecuária (mil R$);
+        - **VD** = Valor das Despesas dos Estabelecimentos Agropecuários (mil R$);
+        - **AU** = Área Utilizada dos Estabelecimentos Agropecuários (hectares).
+        
+        O fator **1000** converte os valores disponibilizados pelo SIDRA de **mil reais** para **reais**.
+        """)
+        
+        st.latex(r"""
+        CO_{2026}
+        =
+        CO_{2017}
+        \times
+        F_{IPA-M}
+        """)
+        
+        st.markdown("""
+        onde **F<sub>IPA-M</sub>** corresponde ao fator acumulado do **Índice de Preços ao Produtor Amplo – Mercado (IPA-M)** entre 2017 e maio de 2026.
+        """, unsafe_allow_html=True)
+        
+        st.subheader("Área utilizada")
+        
+        st.markdown("""
+        O denominador empregado no cálculo corresponde exclusivamente à **Área Utilizada dos Estabelecimentos Agropecuários**, obtida na **Tabela 6882 do SIDRA/IBGE**.
+        
+        Antes da etapa de imputação foram realizadas correções nas áreas dos pequenos estratos, garantindo maior consistência entre os registros utilizados no cálculo do indicador.
+        """)
+        
+        st.subheader("Tratamento da base de dados")
+        
+        st.markdown("""
+        Antes da construção do indicador foram realizados diversos procedimentos de tratamento e padronização da base de dados, incluindo:
+        
+        - atualização monetária dos valores para **maio de 2026** utilizando o **IPA-M**;
+        - padronização dos códigos territoriais do IBGE;
+        - padronização das nomenclaturas de municípios, microrregiões, unidades da federação e grandes regiões;
+        - exclusão dos registros classificados como **Total**;
+        - exclusão dos registros **Total sem produtor sem área**;
+        - exclusão dos registros **Produtor sem área**;
+        - exclusão dos estabelecimentos pertencentes aos estratos de área **inferiores a 5 hectares**;
+        - correção das áreas utilizadas dos pequenos estratos antes da etapa de imputação.
+        """)
+        
+        st.subheader("Procedimentos de imputação")
+        
+        st.markdown("""
+        Em razão da existência de informações suprimidas por sigilo estatístico e da ausência de dados em determinados estratos municipais, foi desenvolvido um procedimento hierárquico de imputação para ampliar a cobertura espacial da base de dados.
+        
+        As imputações foram realizadas para as seguintes variáveis:
+        
+        - Valor Bruto da Produção;
+        - Valor das Despesas;
+        - Área Utilizada.
+        
+        A imputação foi realizada utilizando medidas robustas de tendência central (**mediana**), obedecendo à seguinte hierarquia territorial:
+        
+        1. Microrregião;
+        2. Unidade da Federação (UF);
+        3. Grande Região;
+        4. Brasil.
+        
+        Sempre que existiam informações suficientes em um determinado nível territorial, a imputação era realizada e o processo era encerrado. Apenas na ausência de dados passava-se ao nível imediatamente superior.
+        
+        Após a imputação das variáveis básicas, o custo de oportunidade foi **recalculado integralmente**, utilizando os valores finais imputados de produção, despesas e área utilizada.
+        """)
+        
+        st.subheader("Custo de oportunidade não negativo")
+        
+        st.latex(r"""
+        CO^{+}
+        =
+        \max(CO_{2026},0)
+        """)
+        
+        st.markdown("""
+        Assim, valores originalmente negativos foram transformados em **0**, evitando que prejuízos distorçam as comparações espaciais do custo de oportunidade positivo.
+        """)
+        
+        st.subheader("Observações")
+        
+        st.markdown("""
+        - Base de dados: **Censo Agropecuário 2017 (SIDRA/IBGE)**;
+        - Valores monetários atualizados para **maio de 2026** pelo **IPA-M (FGV)**;
+        - Unidade do indicador: **R$/ha**;
+        - O painel permite análises por **Grande Região**, **Unidade da Federação**, **Microrregião**, **Município** e **Estratos de Área**;
+        - As estatísticas podem ser calculadas utilizando **média** ou **mediana**, conforme seleção do usuário.
+        """)
+        
+        st.divider()
+        
+        st.subheader("Créditos")
+        
+        st.markdown("""
+        **Desenvolvimento metodológico, científico e computacional**
+        
+        Em ordem alfabética:
+        
+        - **Andréa Da Silva Gomes**
+        - **Helga Dulce Bispo Passos**
+        - **Luciene Maria Torquato Cerqueira Batista**
+        - **Mônica de Moura Pires**
+        """)
+        
+        st.caption("""
+        Dashboard desenvolvido para análise espacial do custo de oportunidade da agropecuária brasileira utilizando dados do Censo Agropecuário 2017 (SIDRA/IBGE), com atualização monetária para maio de 2026 pelo IPA-M (FGV).
+        """)
 
 
 def mostrar_indicadores(df):
