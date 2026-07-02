@@ -1,65 +1,86 @@
+from __future__ import annotations
+
+import json
+from copy import deepcopy
 from pathlib import Path
-import geopandas as gpd
-import geobr
+from typing import Any
 
-from config import ANO_MAPA, GEOJSON_UF, GEOJSON_MICRO, GEOJSON_MUN
+from config import GEOJSON_UF, GEOJSON_MICRO, GEOJSON_MUN
 
 
-def _salvar_geojson(gdf, caminho: Path, cols: list[str], tolerancia: float) -> None:
-    gdf = gdf.copy()
-    gdf = gdf[cols + ["geometry"]].copy()
-    gdf = gdf.to_crs(epsg=4326)
-    gdf["geometry"] = gdf["geometry"].simplify(tolerancia, preserve_topology=True)
-    caminho.parent.mkdir(exist_ok=True)
-    gdf.to_file(caminho, driver="GeoJSON")
+class GeoJSONNaoEncontrado(FileNotFoundError):
+    pass
+
+
+def _ler_geojson(caminho: Path) -> dict[str, Any]:
+    if not caminho.exists():
+        raise GeoJSONNaoEncontrado(
+            f"GeoJSON não encontrado: {caminho}. "
+            "Gere os arquivos localmente com scripts/gerar_geojsons_local.py e envie a pasta dados/ para o GitHub."
+        )
+    with open(caminho, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
 def gerar_geojsons_se_necessario() -> None:
-    """Gera as malhas simplificadas apenas na primeira execução."""
-    if GEOJSON_UF.exists() and GEOJSON_MICRO.exists() and GEOJSON_MUN.exists():
-        return
+    """No Streamlit Cloud, não gera malhas para evitar geobr/geopandas.
 
-    if not GEOJSON_UF.exists():
-        uf = geobr.read_state(year=ANO_MAPA)
-        uf["codigo_uf"] = uf["code_state"].astype(str).str.replace(r"\.0$", "", regex=True).str.zfill(2)
-        _salvar_geojson(uf, GEOJSON_UF, ["codigo_uf", "abbrev_state", "name_state"], tolerancia=0.01)
-
-    if not GEOJSON_MICRO.exists():
-        micro = geobr.read_micro_region(year=ANO_MAPA)
-        micro["codigo_microrregiao"] = micro["code_micro"].astype(str).str.replace(r"\.0$", "", regex=True).str.zfill(5)
-        cols = ["codigo_microrregiao"]
-        for c in ["name_micro", "name_micro_region", "name_region"]:
-            if c in micro.columns:
-                cols.append(c)
-        _salvar_geojson(micro, GEOJSON_MICRO, cols, tolerancia=0.015)
-
-    if not GEOJSON_MUN.exists():
-        mun = geobr.read_municipality(year=ANO_MAPA)
-        mun["codigo_municipio"] = mun["code_muni"].astype(str).str.replace(r"\.0$", "", regex=True).str.zfill(7)
-        cols = ["codigo_municipio"]
-        for c in ["name_muni", "name_municipality", "abbrev_state"]:
-            if c in mun.columns:
-                cols.append(c)
-        _salvar_geojson(mun, GEOJSON_MUN, cols, tolerancia=0.04)
+    Os arquivos GeoJSON devem estar no repositório em dados/.
+    Esta função apenas valida se eles existem.
+    """
+    faltantes = [
+        str(p) for p in [GEOJSON_UF, GEOJSON_MICRO, GEOJSON_MUN]
+        if not p.exists()
+    ]
+    if faltantes:
+        raise GeoJSONNaoEncontrado(
+            "Faltam os GeoJSONs: " + ", ".join(faltantes) + ". "
+            "Rode localmente scripts/gerar_geojsons_local.py e envie os arquivos gerados para dados/."
+        )
 
 
-def carregar_geojson_uf():
-    gerar_geojsons_se_necessario()
-    gdf = gpd.read_file(GEOJSON_UF)
-    # Compatibilidade com o app original.
-    gdf["code_state"] = gdf["codigo_uf"].astype(str).str.zfill(2)
-    return gdf
+def carregar_geojson_uf() -> dict[str, Any]:
+    return _ler_geojson(GEOJSON_UF)
 
 
-def carregar_geojson_micro():
-    gerar_geojsons_se_necessario()
-    gdf = gpd.read_file(GEOJSON_MICRO)
-    gdf["code_micro"] = gdf["codigo_microrregiao"].astype(str).str.zfill(5)
-    return gdf
+def carregar_geojson_micro() -> dict[str, Any]:
+    return _ler_geojson(GEOJSON_MICRO)
 
 
-def carregar_geojson_municipios():
-    gerar_geojsons_se_necessario()
-    gdf = gpd.read_file(GEOJSON_MUN)
-    gdf["code_muni"] = gdf["codigo_municipio"].astype(str).str.zfill(7)
-    return gdf
+def carregar_geojson_municipios() -> dict[str, Any]:
+    return _ler_geojson(GEOJSON_MUN)
+
+
+def _normalizar_codigo(valor: Any, tamanho: int) -> str:
+    txt = "" if valor is None else str(valor)
+    txt = txt.replace(".0", "")
+    txt = "".join(ch for ch in txt if ch.isdigit())
+    return txt.zfill(tamanho) if txt else ""
+
+
+def juntar_dados_no_geojson(
+    geojson: dict[str, Any],
+    dados_por_codigo: dict[str, dict[str, Any]],
+    propriedade_codigo: str,
+    tamanho_codigo: int,
+    aliases_codigo: list[str] | None = None,
+) -> dict[str, Any]:
+    """Insere os dados agregados dentro das propriedades do GeoJSON."""
+    aliases_codigo = aliases_codigo or []
+    saida = deepcopy(geojson)
+
+    for feature in saida.get("features", []):
+        props = feature.setdefault("properties", {})
+        codigo = props.get(propriedade_codigo)
+        if codigo is None:
+            for alias in aliases_codigo:
+                if props.get(alias) is not None:
+                    codigo = props.get(alias)
+                    break
+        codigo_norm = _normalizar_codigo(codigo, tamanho_codigo)
+        props[propriedade_codigo] = codigo_norm
+        if codigo_norm in dados_por_codigo:
+            props.update(dados_por_codigo[codigo_norm])
+
+    return saida
+
