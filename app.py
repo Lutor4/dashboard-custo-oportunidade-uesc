@@ -795,7 +795,21 @@ def mapa_folium(df_agg, nivel, limite_superior, renderizar_mapa=True):
     m.fit_bounds(BRASIL_BOUNDS)
     m.options["maxBounds"] = BRASIL_BOUNDS
 
-    colormap = cm.linear.YlOrBr_09.scale(0, limite_superior)
+    colormap = cm.linear.YlOrBr_09.scale(
+    0,
+    limite_superior
+    )
+    
+    colormap.caption = "Custo de oportunidade"
+    
+    colormap.tick_labels = [
+        formatar_numero_br(x)
+        for x in np.linspace(
+            0,
+            limite_superior,
+            6
+        )
+    ]
     colormap.caption = "Custo de oportunidade não negativo"
 
     def style_function(feature):
@@ -813,9 +827,20 @@ def mapa_folium(df_agg, nivel, limite_superior, renderizar_mapa=True):
 
     tooltip_fields, aliases = [], []
     for c, a in pares:
-        if any(c in feat.get("properties", {}) for feat in mapa.get("features", [])):
-            tooltip_fields.append(c)
-            aliases.append(a)
+        tooltip_fields = []
+
+        for campo in [
+            "municipio",
+            "microrregiao",
+            "uf_sigla",
+            "regiao",
+            "custo_agregado_formatado",
+        ]:
+            if all(
+                campo in f.get("properties", {})
+                for f in mapa["features"]
+            ):
+                tooltip_fields.append(campo)
 
     folium.GeoJson(
         mapa,
