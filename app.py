@@ -765,30 +765,20 @@ def mostrar_cabecalho():
         Dashboard desenvolvido para análise espacial do custo de oportunidade da agropecuária brasileira utilizando dados do Censo Agropecuário 2017 (SIDRA/IBGE), com atualização monetária para maio de 2026 pelo IPA-M (FGV).
         """)
 
-with st.expander("👥 Créditos", expanded=False):
-
-    st.markdown("""
-### Desenvolvimento metodológico, científico e computacional
-
-Em ordem alfabética:
-
-- **ANDRÉA DA SILVA GOMES**
-- **Helga Dulce Bispo Passos**
-- **Luciene Maria Torquato Cerqueira Batista**
-- **Mônica de Moura Pires**
-""")
-
-    st.markdown("---")
-
-    st.markdown("""
-**Base de dados**
-
-Censo Agropecuário 2017 (SIDRA/IBGE)
-
-**Atualização monetária**
-
-IPA-M (FGV) — Maio de 2026
-""")
+    with st.expander("👥 Créditos", expanded=False):
+    
+        st.markdown("""
+    ### Desenvolvimento metodológico, científico e computacional
+    
+    Em ordem alfabética:
+    
+    - **ANDRÉA DA SILVA GOMES**
+    - **Helga Dulce Bispo Passos**
+    - **Luciene Maria Torquato Cerqueira Batista**
+    - **Mônica de Moura Pires**
+    """)
+    
+        st.markdown("---")
 
 def mostrar_indicadores(df):
     col1, col2, col3, col4, col5 = st.columns(5)
