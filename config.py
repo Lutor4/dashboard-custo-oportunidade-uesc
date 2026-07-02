@@ -19,7 +19,7 @@ DADOS_DIR.mkdir(exist_ok=True)
 ASSETS_DIR.mkdir(exist_ok=True)
 
 BASE_LOCAL_PATH = DADOS_DIR / BASE_FILENAME
-LOGO_PATH = ASSETS_DIR / "Brasão_da_UESC.png"
+LOGO_PATH = Path("Brasão_da_UESC.png")
 
 GEOJSON_UF = DADOS_DIR / "geo_uf_simplificado.geojson"
 GEOJSON_MICRO = DADOS_DIR / "geo_microrregioes_simplificado.geojson"
