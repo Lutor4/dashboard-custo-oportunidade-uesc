@@ -73,12 +73,10 @@ Dashboard
 
 O custo de oportunidade foi calculado por hectare utilizando:
 
-[
-CO_{2017}
-=========
-
-\frac{(VP-VD)\times1000}{AU}
-]
+$$
+CO_{2017} =
+\frac{(VP - VD)\times 1000}{AU}
+$$
 
 onde:
 
@@ -90,14 +88,10 @@ Como os valores monetários do SIDRA encontram-se em milhares de reais, foi apli
 
 Posteriormente:
 
-[
-CO_{2026}
-=========
-
-CO_{2017}
-\times
-F_{IPA-M}
-]
+$$
+CO_{2026} =
+CO_{2017} \times F_{IPA-M}
+$$
 
 em que **FIPA-M** representa o fator acumulado do IPA-M entre 2017 e maio de 2026.
 
@@ -153,12 +147,10 @@ Após as imputações, todo o custo de oportunidade foi recalculado utilizando o
 
 Além do indicador original foi construída uma segunda variável:
 
-[
-CO^{+}
-======
-
-\max(CO_{2026},0)
-]
+$$
+CO^{+} =
+\max(CO_{2026}, 0)
+$$
 
 Valores negativos foram substituídos por zero, permitindo comparações espaciais focadas exclusivamente no potencial econômico positivo da atividade agropecuária.
 
