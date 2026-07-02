@@ -25,6 +25,7 @@ from pathlib import Path
 import re
 import math
 
+
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -33,15 +34,19 @@ import plotly.express as px
 from auth import check_password
 from config import BASE_LOCAL_PATH, LOGO_PATH, COL_CUSTO_NAO_NEGATIVO, LIMITE_SUPERIOR_PADRAO
 from download_base import garantir_base_local
-from geojson_utils import carregar_geojson_municipios, carregar_geojson_uf, carregar_geojson_micro, gerar_geojsons_se_necessario
+from geojson_utils import (
+    carregar_geojson_municipios,
+    carregar_geojson_uf,
+    carregar_geojson_micro,
+    gerar_geojsons_se_necessario,
+    juntar_dados_no_geojson,
+)
 
 try:
-    import geobr
     import folium
     import branca.colormap as cm
     from streamlit_folium import st_folium
 except Exception:
-    geobr = None
     folium = None
     cm = None
     st_folium = None
@@ -354,24 +359,18 @@ def carregar_base(caminho_arquivo=None, arquivo_upload=None):
 # ============================================================
 
 @st.cache_data(show_spinner="Carregando malha municipal...")
-def carregar_malha_municipal(simplificar=True):
-    gdf = carregar_geojson_municipios()
-    gdf["code_muni"] = padronizar_codigo_municipio(gdf["code_muni"])
-    return gdf
+def carregar_malha_municipal():
+    return carregar_geojson_municipios()
 
 
 @st.cache_data(show_spinner="Carregando malha de UF...")
-def carregar_malha_uf(simplificar=True):
-    gdf = carregar_geojson_uf()
-    gdf["code_state"] = padronizar_codigo_uf(gdf["code_state"])
-    return gdf
+def carregar_malha_uf():
+    return carregar_geojson_uf()
 
 
 @st.cache_data(show_spinner="Carregando malha de microrregião...")
-def carregar_malha_micro(simplificar=True):
-    gdf = carregar_geojson_micro()
-    gdf["code_micro"] = padronizar_codigo_micro(gdf["code_micro"])
-    return gdf
+def carregar_malha_micro():
+    return carregar_geojson_micro()
 
 
 # ============================================================
@@ -725,10 +724,10 @@ def mapa_folium(df_agg, nivel, limite_superior, renderizar_mapa=True):
         st.info("Mapa interativo desativado na barra lateral para acelerar o painel.")
         return
 
-    if geobr is None or folium is None or st_folium is None or cm is None:
+    if folium is None or st_folium is None or cm is None:
         st.error(
             "Mapas interativos indisponíveis. Instale as dependências com: "
-            "`pip install geopandas geobr folium streamlit-folium branca`"
+            "`pip install folium streamlit-folium branca`"
         )
         return
 
@@ -743,20 +742,33 @@ def mapa_folium(df_agg, nivel, limite_superior, renderizar_mapa=True):
         )
         return
 
+    df_mapa = df_agg.copy()
+    df_mapa["custo_agregado_formatado"] = df_mapa["custo_agregado"].apply(formatar_numero_br)
+
     if nivel == "Município":
-        gdf = carregar_malha_municipal()
-        mapa = gdf.merge(df_agg, left_on="code_muni", right_on="codigo_municipio", how="left")
+        geojson = carregar_malha_municipal()
+        df_mapa["codigo_municipio"] = padronizar_codigo_municipio(df_mapa["codigo_municipio"])
+        dados_por_codigo = df_mapa.set_index("codigo_municipio").to_dict(orient="index")
+        mapa = juntar_dados_no_geojson(
+            geojson, dados_por_codigo, "codigo_municipio", 7, aliases_codigo=["code_muni"]
+        )
     elif nivel == "Microrregião":
-        gdf = carregar_malha_micro()
-        mapa = gdf.merge(df_agg, left_on="code_micro", right_on="codigo_microrregiao", how="left")
+        geojson = carregar_malha_micro()
+        df_mapa["codigo_microrregiao"] = padronizar_codigo_micro(df_mapa["codigo_microrregiao"])
+        dados_por_codigo = df_mapa.set_index("codigo_microrregiao").to_dict(orient="index")
+        mapa = juntar_dados_no_geojson(
+            geojson, dados_por_codigo, "codigo_microrregiao", 5, aliases_codigo=["code_micro"]
+        )
     elif nivel == "UF":
-        gdf = carregar_malha_uf()
-        mapa = gdf.merge(df_agg, left_on="code_state", right_on="codigo_uf", how="left")
+        geojson = carregar_malha_uf()
+        df_mapa["codigo_uf"] = padronizar_codigo_uf(df_mapa["codigo_uf"])
+        dados_por_codigo = df_mapa.set_index("codigo_uf").to_dict(orient="index")
+        mapa = juntar_dados_no_geojson(
+            geojson, dados_por_codigo, "codigo_uf", 2, aliases_codigo=["code_state"]
+        )
     else:
         st.info("Mapa interativo disponível para Município, Microrregião e UF.")
         return
-
-    mapa = mapa.to_crs(epsg=4326)
 
     # Foco apenas no Brasil: sem tiles de mapa mundial.
     # Isso evita mostrar outros países e reduz o tempo de carregamento.
@@ -788,11 +800,9 @@ def mapa_folium(df_agg, nivel, limite_superior, renderizar_mapa=True):
     else:
         pares = [("uf_sigla", "UF"), ("regiao", "Região"), ("custo_agregado_formatado", "Custo não negativo")]
 
-    mapa["custo_agregado_formatado"] = mapa["custo_agregado"].apply(formatar_numero_br) if "custo_agregado" in mapa.columns else ""
-
     tooltip_fields, aliases = [], []
     for c, a in pares:
-        if c in mapa.columns:
+        if any(c in feat.get("properties", {}) for feat in mapa.get("features", [])):
             tooltip_fields.append(c)
             aliases.append(a)
 
