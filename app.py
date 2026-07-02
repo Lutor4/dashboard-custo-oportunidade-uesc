@@ -772,13 +772,11 @@ def mostrar_cabecalho():
     
     Em ordem alfabética:
     
-    - **ANDRÉA DA SILVA GOMES**
+    - **Andréa da Silva Gomes**
     - **Helga Dulce Bispo Passos**
     - **Luciene Maria Torquato Cerqueira Batista**
     - **Mônica de Moura Pires**
     """)
-    
-        st.markdown("---")
 
 def mostrar_indicadores(df):
     col1, col2, col3, col4, col5 = st.columns(5)
