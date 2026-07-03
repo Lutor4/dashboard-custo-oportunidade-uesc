@@ -1,0 +1,11 @@
+streamlit
+pandas
+numpy
+plotly
+folium
+streamlit-folium
+branca
+gdown
+requests
+openpyxl
+kaleido==0.2.1
