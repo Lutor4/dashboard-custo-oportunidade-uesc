@@ -1,7 +1,7 @@
 # Dashboard do Custo de Oportunidade da Agropecuária Brasileira
 
 ![Python](https://img.shields.io/badge/Python-3.11+-blue)
-![Streamlit](https://img.shields.io/badge/Streamlit-Latest-red)
+![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red)
 ![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-green)
 
 ---
@@ -12,34 +12,36 @@ O **Dashboard do Custo de Oportunidade da Agropecuária Brasileira** é uma plat
 
 O painel foi construído a partir dos dados do **Censo Agropecuário 2017**, disponibilizados pelo **Sistema IBGE de Recuperação Automática (SIDRA/IBGE)**, permitindo análises em diferentes escalas territoriais e por estratos de área dos estabelecimentos agropecuários.
 
-O dashboard disponibiliza mapas temáticos, rankings, estatísticas descritivas e gráficos interativos, auxiliando pesquisadores, gestores públicos e tomadores de decisão na compreensão da distribuição espacial do custo de oportunidade da agropecuária brasileira.
+O dashboard disponibiliza mapas temáticos, rankings, estatísticas descritivas, gráficos interativos e exportação de resultados, auxiliando pesquisadores, gestores públicos e tomadores de decisão na compreensão da distribuição espacial do custo de oportunidade da agropecuária brasileira.
 
 ---
 
-# Objetivos
+## Objetivos
 
 O projeto tem como principais objetivos:
 
-* calcular o custo de oportunidade da agropecuária por hectare;
-* disponibilizar análises espaciais em diferentes escalas geográficas;
-* comparar resultados entre estratos de área;
-* permitir análises estatísticas interativas;
-* apoiar pesquisas científicas e estudos sobre economia agrícola.
+- calcular o custo de oportunidade da agropecuária por hectare;
+- disponibilizar análises espaciais em diferentes escalas geográficas;
+- comparar resultados entre estratos de área;
+- permitir análises estatísticas interativas;
+- apoiar pesquisas científicas e estudos sobre economia agrícola.
 
 ---
 
-# Base de dados
+## Base de dados
 
 Os indicadores foram construídos utilizando dados do:
 
-* **Censo Agropecuário 2017**
-* **Sistema IBGE de Recuperação Automática (SIDRA)**
+- **Censo Agropecuário 2017**;
+- **Sistema IBGE de Recuperação Automática (SIDRA)**.
 
-Todos os valores monetários foram atualizados para **maio de 2026** utilizando o **Índice de Preços ao Produtor Amplo – Mercado (IPA-M)** da Fundação Getulio Vargas (FGV).
+A base oficial do artigo foi corrigida monetariamente para **maio de 2026** utilizando o **Índice de Preços ao Produtor Amplo – Mercado (IPA-M)** da Fundação Getulio Vargas (FGV).
+
+A base oficial não precisa ficar no GitHub. O aplicativo baixa automaticamente a base do Google Drive usando o ID informado nos Secrets do Streamlit Cloud.
 
 ---
 
-# Fluxo metodológico
+## Fluxo metodológico
 
 ```text
 Extração dos dados do SIDRA
@@ -58,7 +60,7 @@ Imputação hierárquica
 (Microrregião → UF → Grande Região → Brasil)
             │
             ▼
-Recalculo do custo
+Recálculo do custo
             │
             ▼
 Custo de oportunidade não negativo
@@ -69,35 +71,33 @@ Dashboard
 
 ---
 
-# Metodologia
+## Metodologia
 
 O custo de oportunidade foi calculado por hectare utilizando:
 
 $$
-CO_{2017} =
-\frac{(VP - VD)\times 1000}{AU}
+CO_{2017} = \frac{(VP - VD) \times 1000}{AU}
 $$
 
-onde:
+em que:
 
-* **VP** = Valor Bruto da Produção Agropecuária;
-* **VD** = Valor das Despesas Agropecuárias;
-* **AU** = Área Utilizada.
+- **VP** = Valor Bruto da Produção Agropecuária;
+- **VD** = Valor das Despesas Agropecuárias;
+- **AU** = Área Utilizada.
 
 Como os valores monetários do SIDRA encontram-se em milhares de reais, foi aplicada a multiplicação por **1000** para obtenção dos valores em reais.
 
-Posteriormente:
+Posteriormente, foi realizada a atualização monetária:
 
 $$
-CO_{2026} =
-CO_{2017} \times F_{IPA-M}
+CO_{2026} = CO_{2017} \times F_{IPA-M}
 $$
 
-em que **FIPA-M** representa o fator acumulado do IPA-M entre 2017 e maio de 2026.
+em que **F_IPA-M** representa o fator acumulado do IPA-M entre 2017 e maio de 2026.
 
 ---
 
-# Área utilizada
+## Área utilizada
 
 O cálculo utiliza exclusivamente a **Área Utilizada dos Estabelecimentos Agropecuários**, obtida na **Tabela 6882 do SIDRA**.
 
@@ -105,30 +105,30 @@ Antes da construção do indicador foram realizadas correções nas áreas dos p
 
 ---
 
-# Tratamento dos dados
+## Tratamento dos dados
 
 Foram realizados:
 
-* atualização monetária pelo IPA-M;
-* padronização dos códigos territoriais do IBGE;
-* padronização das nomenclaturas territoriais;
-* exclusão dos registros **Total**;
-* exclusão dos registros **Total sem produtor sem área**;
-* exclusão dos registros **Produtor sem área**;
-* exclusão dos estabelecimentos pertencentes aos estratos inferiores a **5 hectares**;
-* correção das áreas utilizadas dos pequenos estratos.
+- atualização monetária pelo IPA-M;
+- padronização dos códigos territoriais do IBGE;
+- padronização das nomenclaturas territoriais;
+- exclusão dos registros **Total**;
+- exclusão dos registros **Total sem produtor sem área**;
+- exclusão dos registros **Produtor sem área**;
+- exclusão dos estabelecimentos pertencentes aos estratos inferiores a **5 hectares**;
+- correção das áreas utilizadas dos pequenos estratos.
 
 ---
 
-# Procedimentos de imputação
+## Procedimentos de imputação
 
 Em função da existência de dados suprimidos por sigilo estatístico ou da inexistência de observações em determinados municípios e estratos de área, foi desenvolvido um procedimento hierárquico de imputação.
 
 Foram imputadas:
 
-* Valor Bruto da Produção;
-* Valor das Despesas;
-* Área Utilizada.
+- Valor Bruto da Produção;
+- Valor das Despesas;
+- Área Utilizada.
 
 A estratégia empregada utilizou a **mediana**, obedecendo à seguinte hierarquia:
 
@@ -143,39 +143,59 @@ Após as imputações, todo o custo de oportunidade foi recalculado utilizando o
 
 ---
 
-# Custo de oportunidade não negativo
+## Custo de oportunidade não negativo
 
 Além do indicador original foi construída uma segunda variável:
 
 $$
-CO^{+} =
-\max(CO_{2026}, 0)
+CO^{+} = \max(CO_{2026}, 0)
 $$
 
 Valores negativos foram substituídos por zero, permitindo comparações espaciais focadas exclusivamente no potencial econômico positivo da atividade agropecuária.
 
 ---
 
-# Funcionalidades
+## Atualização monetária pelo IPA-M
 
-O dashboard permite:
+O aplicativo preserva a base oficial do artigo, originalmente corrigida para **maio/2026**, e permite criar uma base derivada atualizada pelo **IPA-M mais recente**.
 
-* mapas por Grande Região;
-* mapas por Unidade da Federação;
-* mapas por Microrregião;
-* mapas por Município;
-* mapas separados por estrato de área;
-* filtros territoriais;
-* rankings gerais;
-* rankings por estrato;
-* boxplots;
-* histogramas;
-* estatísticas descritivas;
-* exportação de tabelas.
+Quando o botão **Atualizar valores pelo IPA-M mais recente** é acionado, o app:
+
+1. consulta o histórico mensal do IPA-M no site Dados de Mercado;
+2. atualiza o arquivo local `dados/indice_ipam.csv`;
+3. calcula o fator incremental entre maio/2026 e o mês mais recente disponível;
+4. recalcula produção corrigida, despesa corrigida, resultado líquido, custo de oportunidade e custo de oportunidade não negativo;
+5. salva a base derivada em `dados/BASE_ATUALIZADA_IPAM.csv`;
+6. passa a usar essa base para todos os usuários do app enquanto ela existir.
+
+A base original no Google Drive **não é modificada**. Para voltar à referência oficial de maio/2026, use o botão **Restaurar base oficial de maio/2026**.
 
 ---
 
-# Estrutura do projeto
+## Funcionalidades
+
+O dashboard permite:
+
+- mapas por Grande Região;
+- mapas por Unidade da Federação;
+- mapas por Microrregião;
+- mapas por Município;
+- mapas separados por estrato de área;
+- legenda configurável por faixas manuais, quantis ou intervalos iguais;
+- filtros territoriais;
+- rankings gerais;
+- rankings por estrato;
+- boxplots;
+- histogramas;
+- estatísticas descritivas;
+- exportação de tabelas em CSV e Excel;
+- download de gráficos em PNG;
+- download de mapas interativos em HTML;
+- atualização monetária dinâmica pelo IPA-M.
+
+---
+
+## Estrutura do projeto
 
 ```text
 dashboard-custo-oportunidade-uesc/
@@ -191,55 +211,34 @@ dashboard-custo-oportunidade-uesc/
 │   └── Brasão_da_UESC.png
 │
 ├── dados/
-│
-├── geojsons/
 │   ├── geo_uf_simplificado.geojson
 │   ├── geo_microrregioes_simplificado.geojson
 │   └── geo_municipios_simplificado.geojson
 │
 ├── scripts/
 │   ├── gerar_base_custo_oportunidade_v15.py
-│   └── ajustar_mapas_e_ranking_microrregioes.py
+│   ├── ajustar_mapas_e_ranking_microrregioes.py
+│   └── gerar_geojsons_local.py
 │
 └── README.md
 ```
 
 ---
 
-# Informações para Desenvolvedores
-
 ## Arquivos principais
 
-| Arquivo            | Descrição                                                                                                   |
-| ------------------ | ----------------------------------------------------------------------------------------------------------- |
-| `app.py`           | Aplicativo principal desenvolvido em Streamlit.                                                             |
-| `auth.py`          | Controle de autenticação por senha.                                                                         |
-| `config.py`        | Configurações centrais do projeto.                                                                          |
-| `download_base.py` | Baixa automaticamente a base oficial quando necessário.                                                     |
+| Arquivo | Descrição |
+|---------|-----------|
+| `app.py` | Aplicativo principal desenvolvido em Streamlit. |
+| `auth.py` | Controle de autenticação por senha. |
+| `config.py` | Configurações centrais do projeto. |
+| `download_base.py` | Baixa automaticamente a base oficial quando necessário. |
 | `geojson_utils.py` | Gera automaticamente os GeoJSONs simplificados na primeira execução e reutiliza-os nas execuções seguintes. |
-| `requirements.txt` | Dependências do projeto.                                                                                    |
-
-## Scripts
-
-Os scripts presentes na pasta **scripts** foram utilizados na construção da base de dados e são disponibilizados para fins de reprodutibilidade da metodologia.
+| `requirements.txt` | Dependências do projeto. |
 
 ---
 
-# Base de dados
-
-A base oficial **não é armazenada no GitHub**.
-
-Na primeira execução o aplicativo realiza automaticamente o download da base oficial armazenada no Google Drive.
-
-O arquivo é salvo automaticamente na pasta:
-
-```text
-dados/
-```
-
----
-
-# Configuração do Streamlit Cloud
+## Configuração do Streamlit Cloud
 
 Adicionar os seguintes Secrets:
 
@@ -252,7 +251,7 @@ GOOGLE_DRIVE_ID = "SEU_ID_DO_GOOGLE_DRIVE"
 
 ---
 
-# Executando localmente
+## Executando localmente
 
 Instale as dependências:
 
@@ -280,45 +279,16 @@ utilizando como referência:
 
 ---
 
-# Capturas de tela
+## Créditos
 
-Sugere-se incluir imagens das principais funcionalidades do dashboard.
-
-Exemplo:
-
-```markdown
-![Tela Inicial](assets/tela_inicial.png)
-
-![Mapa](assets/mapa.png)
-
-![Ranking](assets/ranking.png)
-
-![Boxplot](assets/boxplot.png)
-```
-
----
-
-# Trabalhos futuros
-
-* inclusão de Região Geográfica Imediata e Intermediária;
-* exportação dos mapas em PNG;
-* exportação automática em PDF;
-* classificação das legendas por Intervalos Iguais, Quantis, Jenks ou faixas definidas pelo usuário;
-* geração automática de mapas por estrato de área;
-* novas estatísticas espaciais.
-
----
-
-# Créditos
-
-## Desenvolvimento metodológico, científico e computacional
+### Desenvolvimento metodológico, científico e computacional
 
 Em ordem alfabética:
 
-* **Andréa da Silva Gomes**
-* **Helga Dulce Bispo Passos**
-* **Luciene Maria Torquato Cerqueira Batista**
-* **Mônica de Moura Pires**
+- **Andréa da Silva Gomes**
+- **Helga Dulce Bispo Passos**
+- **Luciene Maria Torquato Cerqueira Batista**
+- **Mônica de Moura Pires**
 
 ---
 
@@ -330,13 +300,13 @@ Departamento de Ciências Exatas e Tecnológicas
 
 ---
 
-# Como citar
+## Como citar
 
 > BATISTA, L. M. T. C.; GOMES, A. S.; PASSOS, H. D. B.; PIRES, M. M. **Dashboard do Custo de Oportunidade da Agropecuária Brasileira.** Universidade Estadual de Santa Cruz (UESC), 2026.
 
 ---
 
-# Licença
+## Licença
 
 Este projeto foi desenvolvido para fins científicos, acadêmicos e de pesquisa.
 
