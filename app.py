@@ -1574,13 +1574,13 @@ def _texto_interpretacao_boxplot_estrato(df_original, df_consolidado, df_context
         bloco = f"""
 #### {grupo}
 
-**Como este grupo foi construído.** {construcao}
+**Como este grupo foi construído:** {construcao}
 
-**Cobertura da análise.** {cobertura_txt}
+**Cobertura da análise:** {cobertura_txt}
 
-**O que os dados mostram.** O valor típico do custo de oportunidade neste grupo é **{_formatar_moeda_ha(est['mediana'])}**. A média foi **{_formatar_moeda_ha(est['media'])}**. Aproximadamente **25% {unidade['artigo']} {unidade['plural']}** apresentam custo de oportunidade de até **{_formatar_moeda_ha(est['q1'])}**, metade fica até **{_formatar_moeda_ha(est['mediana'])}** e cerca de **75%** fica até **{_formatar_moeda_ha(est['q3'])}**.
+**O que os dados mostram:** O valor típico do custo de oportunidade neste grupo é **{_formatar_moeda_ha(est['mediana'])}**. A média foi **{_formatar_moeda_ha(est['media'])}**. Aproximadamente **25% {unidade['artigo']} {unidade['plural']}** apresentam custo de oportunidade de até **{_formatar_moeda_ha(est['q1'])}**, metade fica até **{_formatar_moeda_ha(est['mediana'])}** e cerca de **75%** fica até **{_formatar_moeda_ha(est['q3'])}**.
 
-**Leitura para decisão.** A variação entre {unidade['plural']} é **{variacao['rotulo']}**: {variacao['explicacao']} A distribuição está **{assim['rotulo']}**; em termos simples, {assim['explicacao']} {decisao}
+**Leitura para decisão:** A variação entre {unidade['plural']} é **{variacao['rotulo']}**: {variacao['explicacao']} A distribuição está **{assim['rotulo']}**; em termos simples, {assim['explicacao']} {decisao}
 """
         blocos.append(bloco.strip())
 
