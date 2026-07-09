@@ -1556,8 +1556,7 @@ def _texto_interpretacao_boxplot_estrato(df_original, df_consolidado, df_context
     blocos = [
         f"Neste boxplot, cada {unidade['singular']} entra **uma única vez** em cada estrato agregado. "
         f'A base municipal possui até **18 estratos originais de área** por município, ou **19**, considerando o estrato "Total". '
-        f'Para cada {unidade["singular"]}, a plataforma resume os valores dos municípios e estratos que pertencem a esse grupo em **um único valor**, usando a medida escolhida no painel.'
-        f"A plataforma consolida os registros usando a **{criterio}** definida no painel e transforma os dados em uma leitura útil para comparação territorial. "
+        f'Para cada {unidade["singular"]}, a plataforma resume os valores dos municípios e estratos que pertencem a esse grupo em **um único valor**, usando a **{criterio}**, definida no painel, e transforma os dados em uma leitura útil para comparação territorial.'
         "As hastes mostram o menor e o maior valor usados no gráfico; portanto, este boxplot não separa pontos como outliers."
     ]
 
