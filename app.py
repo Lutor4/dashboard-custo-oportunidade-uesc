@@ -1423,9 +1423,9 @@ def _texto_interpretacao_boxplot(df, grupo_coluna, nome_grupo, coluna_valor="cus
 |---|---:|
 | Observações analisadas | {formatar_numero_br(est['n'], 0)} |
 | Menor valor observado | {_formatar_moeda_ha(est['minimo'])} |
-| 25% das observações possuem um custo de oportunidade até | {_formatar_moeda_ha(est['q1'])} |
+| 25% das observações possuem um custo de oportunidade de até | {_formatar_moeda_ha(est['q1'])} |
 | Mediana | {_formatar_moeda_ha(est['mediana'])} |
-| 75% das observações possuem um custo de oportunidade estão até | {_formatar_moeda_ha(est['q3'])} |
+| 75% das observações possuem um custo de oportunidade de até | {_formatar_moeda_ha(est['q3'])} |
 | Maior valor observado | {_formatar_moeda_ha(est['maximo'])} |
 
 **Leitura:** metade das observações apresenta custo de oportunidade de até {_formatar_moeda_ha(est['mediana'])}. Os 50% centrais ficam entre {_formatar_moeda_ha(est['q1'])} e 75% das observações possuem um custo de oportunidade de até {_formatar_moeda_ha(est['q3'])}.
