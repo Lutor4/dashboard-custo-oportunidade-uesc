@@ -5,7 +5,7 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
-from config import GEOJSON_UF, GEOJSON_MICRO, GEOJSON_MUN
+from config import GEOJSON_UF, GEOJSON_MICRO, GEOJSON_MUN, GEOJSON_INTERMEDIARIA
 
 
 class GeoJSONNaoEncontrado(FileNotFoundError):
@@ -29,15 +29,17 @@ def gerar_geojsons_se_necessario() -> None:
     Esta função apenas valida se eles existem.
     """
     faltantes = [
-        str(p) for p in [GEOJSON_UF, GEOJSON_MICRO, GEOJSON_MUN]
-        if not p.exists()
-    ]
+    str(p) for p in [GEOJSON_UF, GEOJSON_MICRO, GEOJSON_MUN, GEOJSON_INTERMEDIARIA]
+    if not p.exists()
+]
     if faltantes:
         raise GeoJSONNaoEncontrado(
             "Faltam os GeoJSONs: " + ", ".join(faltantes) + ". "
             "Rode localmente scripts/gerar_geojsons_local.py e envie os arquivos gerados para dados/."
         )
 
+def carregar_geojson_intermediaria() -> dict[str, Any]:
+    return _ler_geojson(GEOJSON_INTERMEDIARIA)
 
 def carregar_geojson_uf() -> dict[str, Any]:
     return _ler_geojson(GEOJSON_UF)
