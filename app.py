@@ -1679,24 +1679,24 @@ def mapa_folium(df_agg, nivel, limite_superior, renderizar_mapa=True, faixas_leg
         )
 
     elif nivel == "Região Intermediária":
-    geojson = carregar_malha_intermediaria()
-    df_mapa["codigo_regiao_intermediaria"] = (
-        df_mapa["codigo_regiao_intermediaria"]
-        .astype(str)
-        .str.replace(r"\.0$", "", regex=True)
-        .str.replace(r"\D", "", regex=True)
-        .str.zfill(4)
-    )
-
-    dados_por_codigo = df_mapa.set_index("codigo_regiao_intermediaria").to_dict(orient="index")
-
-    mapa = juntar_dados_no_geojson(
-        geojson,
-        dados_por_codigo,
-        "codigo_regiao_intermediaria",
-        4,
-        aliases_codigo=["code_intermediate"],
-    )
+        geojson = carregar_malha_intermediaria()
+        df_mapa["codigo_regiao_intermediaria"] = (
+            df_mapa["codigo_regiao_intermediaria"]
+            .astype(str)
+            .str.replace(r"\.0$", "", regex=True)
+            .str.replace(r"\D", "", regex=True)
+            .str.zfill(4)
+        )
+    
+        dados_por_codigo = df_mapa.set_index("codigo_regiao_intermediaria").to_dict(orient="index")
+    
+        mapa = juntar_dados_no_geojson(
+            geojson,
+            dados_por_codigo,
+            "codigo_regiao_intermediaria",
+            4,
+            aliases_codigo=["code_intermediate"],
+        )
     
     elif nivel == "UF":
         geojson = carregar_malha_uf()
