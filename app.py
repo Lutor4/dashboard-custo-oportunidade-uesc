@@ -1625,7 +1625,7 @@ Foram consideradas **{formatar_numero_br(est['n'], 0)} {unidade['plural']}**. {m
 
 A distribuição está **{assim['rotulo']}**: {assim['explicacao']} A variação é **{variacao['rotulo']}**, ou seja, {variacao['explicacao']}
 
-Para gestão, essa leitura ajuda a identificar se o custo de oportunidade está concentrado em uma faixa relativamente comum ou se há diferenças territoriais importantes que precisam ser tratadas separadamente.
+Essa leitura ajuda a identificar se o custo de oportunidade está concentrado em uma faixa relativamente comum ou se há diferenças territoriais importantes que precisam ser tratadas separadamente.
 """.strip()
 
 
