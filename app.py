@@ -1997,13 +1997,27 @@ medida_key = "mean" if medida == "Média" else "median"
 # Quando a base filtrada contém apenas uma microrregião e o usuário escolhe
 # "Microrregião", o painel passa a detalhar os municípios dessa microrregião.
 # A visão geral continua preservada quando há mais de uma microrregião no filtro.
-n_micros_filtradas = df_filtrado["codigo_microrregiao"].dropna().nunique() if "codigo_microrregiao" in df_filtrado.columns else 0
-if nivel == "Microrregião" and n_micros_filtradas == 1:
-    nivel_painel = "Município"
-    nome_micro = df_filtrado["microrregiao"].dropna().iloc[0] if df_filtrado["microrregiao"].notna().any() else "microrregião selecionada"
-    st.info(f"Análise detalhada dos municípios da microrregião: {nome_micro}")
-else:
-    nivel_painel = nivel
+nivel_painel = nivel
+
+# Quando o filtro deixa apenas uma unidade territorial selecionada,
+# o mapa deve detalhar os municípios dentro dela.
+if nivel == "Microrregião" and "codigo_microrregiao" in df_filtrado.columns:
+    if df_filtrado["codigo_microrregiao"].dropna().nunique() == 1:
+        nivel_painel = "Município"
+        nome = df_filtrado["microrregiao"].dropna().iloc[0]
+        st.info(f"Análise detalhada dos municípios da microrregião: {nome}")
+
+elif nivel == "Região Intermediária" and "regiao_intermediaria" in df_filtrado.columns:
+    if df_filtrado["regiao_intermediaria"].dropna().nunique() == 1:
+        nivel_painel = "Município"
+        nome = df_filtrado["regiao_intermediaria"].dropna().iloc[0]
+        st.info(f"Análise detalhada dos municípios da região intermediária: {nome}")
+
+elif nivel == "Região Imediata" and "regiao_imediata" in df_filtrado.columns:
+    if df_filtrado["regiao_imediata"].dropna().nunique() == 1:
+        nivel_painel = "Município"
+        nome = df_filtrado["regiao_imediata"].dropna().iloc[0]
+        st.info(f"Análise detalhada dos municípios da região imediata: {nome}")
 
 df_agg = agregar(df_filtrado, nivel=nivel_painel, medida=medida_key)
 
