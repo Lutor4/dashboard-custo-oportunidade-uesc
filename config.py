@@ -24,6 +24,7 @@ LOGO_PATH = Path("Brasão_da_UESC.png")
 GEOJSON_UF = DADOS_DIR / "geo_uf_simplificado.geojson"
 GEOJSON_MICRO = DADOS_DIR / "geo_microrregioes_simplificado.geojson"
 GEOJSON_MUN = DADOS_DIR / "geo_municipios_simplificado.geojson"
+GEOJSON_INTERMEDIARIA = DADOS_DIR / "geo_regioes_intermediarias_simplificado.geojson"
 
 COL_CUSTO_NAO_NEGATIVO = "custo_oportunidade_corrigido_r_ha_imputado_nao_negativo"
 LIMITE_SUPERIOR_PADRAO = 15000
