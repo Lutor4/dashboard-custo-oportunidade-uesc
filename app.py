@@ -46,6 +46,7 @@ from geojson_utils import (
     carregar_geojson_municipios,
     carregar_geojson_uf,
     carregar_geojson_micro,
+    carregar_geojson_intermediaria,
     gerar_geojsons_se_necessario,
     juntar_dados_no_geojson,
 )
@@ -745,7 +746,9 @@ def carregar_malha_uf():
 def carregar_malha_micro():
     return carregar_geojson_micro()
 
-
+@st.cache_data(show_spinner="Carregando malha de região intermediária...")
+def carregar_malha_intermediaria():
+    return carregar_geojson_intermediaria()
 # ============================================================
 # ESTRATOS CONFIGURÁVEIS
 # ============================================================
@@ -1675,6 +1678,26 @@ def mapa_folium(df_agg, nivel, limite_superior, renderizar_mapa=True, faixas_leg
             aliases_codigo=["code_micro"],
         )
 
+    elif nivel == "Região Intermediária":
+    geojson = carregar_malha_intermediaria()
+    df_mapa["codigo_regiao_intermediaria"] = (
+        df_mapa["codigo_regiao_intermediaria"]
+        .astype(str)
+        .str.replace(r"\.0$", "", regex=True)
+        .str.replace(r"\D", "", regex=True)
+        .str.zfill(4)
+    )
+
+    dados_por_codigo = df_mapa.set_index("codigo_regiao_intermediaria").to_dict(orient="index")
+
+    mapa = juntar_dados_no_geojson(
+        geojson,
+        dados_por_codigo,
+        "codigo_regiao_intermediaria",
+        4,
+        aliases_codigo=["code_intermediate"],
+    )
+    
     elif nivel == "UF":
         geojson = carregar_malha_uf()
         df_mapa["codigo_uf"] = padronizar_codigo_uf(df_mapa["codigo_uf"])
