@@ -1580,7 +1580,7 @@ def _texto_interpretacao_boxplot_estrato(df_original, df_consolidado, df_context
 
 **O que os dados mostram:** O valor típico do custo de oportunidade neste grupo é **{_formatar_moeda_ha(est['mediana'])}**. A média foi **{_formatar_moeda_ha(est['media'])}**. Aproximadamente **25% {unidade['artigo']} {unidade['plural']}** apresentam custo de oportunidade de até **{_formatar_moeda_ha(est['q1'])}**, metade fica até **{_formatar_moeda_ha(est['mediana'])}** e cerca de **75%** fica até **{_formatar_moeda_ha(est['q3'])}**.
 
-**Leitura para decisão:** A variação entre {unidade['plural']} é **{variacao['rotulo']}**: {variacao['explicacao']} A distribuição está **{assim['rotulo']}**; em termos simples, {assim['explicacao']} {decisao}
+**Resumo:** A variação entre {unidade['plural']} é **{variacao['rotulo']}**: {variacao['explicacao']} A distribuição está **{assim['rotulo']}**; em termos simples, {assim['explicacao']} {decisao}
 """
         blocos.append(bloco.strip())
 
@@ -1633,7 +1633,7 @@ def _texto_interpretacao_boxplot_regiao(df_consolidado_regiao, nivel, medida="me
 
     for item in sorted(resumo, key=lambda x: x["regiao"]):
         blocos.append(
-            f"**{item['regiao']}.** Foram consideradas **{formatar_numero_br(item['n'], 0)} {unidade['plural']}**. "
+            f"**{item['regiao']}:** Foram consideradas **{formatar_numero_br(item['n'], 0)} {unidade['plural']}**. "
             f"O valor típico foi **{_formatar_moeda_ha(item['mediana'])}** e a média foi **{_formatar_moeda_ha(item['media'])}**. "
             f"A metade central fica entre **{_formatar_moeda_ha(item['q1'])}** e **{_formatar_moeda_ha(item['q3'])}**. "
             f"A variação é **{item['variacao']['rotulo']}**, ou seja, {item['variacao']['explicacao']} "
@@ -1641,7 +1641,7 @@ def _texto_interpretacao_boxplot_regiao(df_consolidado_regiao, nivel, medida="me
         )
 
     blocos.append(
-        "**Leitura para decisão.** Essa comparação ajuda a identificar onde o custo de oportunidade é mais alto, onde os valores são mais homogêneos e onde há maior diferença interna. "
+        "**Resumo:** Essa comparação ajuda a identificar onde o custo de oportunidade é mais alto, onde os valores são mais homogêneos e onde há maior diferença interna. "
         "Para gestores, isso indica se uma estratégia pode ser pensada de forma regional ou se exige ações mais específicas dentro de cada grande região."
     )
 
