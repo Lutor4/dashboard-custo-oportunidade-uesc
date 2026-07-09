@@ -50,7 +50,7 @@ salvar_geojson(
     micro,
     "geo_microrregioes_simplificado.geojson",
     cols_micro,
-    tolerancia=0.015
+    tolerancia=0.005
 )
 
 print("Baixando malha de municípios...")
@@ -64,7 +64,7 @@ salvar_geojson(
     mun,
     "geo_municipios_simplificado.geojson",
     cols_mun,
-    tolerancia=0.04
+    tolerancia=0.005
 )
 
 print("Finalizado.")
